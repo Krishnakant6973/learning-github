@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" name="" id="one">
+    <button onclick="showImage()">Submit</button>
+    <img src="" alt="" id="image-show">
+    <script>
+        let showImage = async() => {
+            let email = document.getElementById("one").value
+            let obj = { 
+                "prompt":email,
+            }
+            let api = await fetch("https://d91f-157-38-245-63.ngrok-free.app/generate-image",
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify(obj),
+                    mode:"cors"
+                }
+            )
+            let apiResponse = await api.json()  
+            console.log(apiResponse)
+            document.getElementById("image-show").src="data:image/webp;base64,"+apiResponse.image.data[0].b64_json
+        }
+    </script>
+</body>
+</html>

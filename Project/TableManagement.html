@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Management</title>
+  <link rel="stylesheet" href="./TableManagement.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="logo">
+      <button class="dropdown">Flow Shop ⌄</button>
+    </div>
+    <div class="user-actions">
+      <button class="theme-toggle"></button>
+      <button class="profile-icon"></button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="content-header">
+      <h1>Product Management</h1>
+      <button class="btn-primary">Create Product</button>
+    </div>
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Image</th>
+          <th colspan="2">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="tbody">
+        <!-- Repeat rows as necessary -->
+      </tbody>
+    </table>
+  </main>
+</body>
+<script>
+  const table = document.getElementsByClassName("tbody")[0]
+  console.log(table)
+  fetch("https://d91f-157-38-245-63.ngrok-free.app/products", {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json"
+    },
+  }).then(res => res.json())
+    .then(res => {
+      console.log(res)
+      console.log(res[0].id)
+      res.forEach(element => {
+        table.insertAdjacentHTML("beforeend", `<tr>
+          <td>${element.id}</td>
+          <td>${element.name}</td>
+          <td>${element.price}</td>
+          <td>${element.category}</td>
+          <td>${element.description}</td>
+         <td> <img src="" alt=" "/></td>
+          <td><button class="btn-edit">Edit</button></td>
+          <td><button class="btn-delete">delete</button></td>
+        </tr>
+        <tr>`)
+      });
+    })
+    .catch(err => {
+      console.log(err)
+    })
+
+  table.addEventListener("click", (e) => {
+    let Authorization = JSON.parse(localStorage.getItem("user")).jwtToken
+    if (e.target.classList.contains("btn-edit") && Authorization) {
+      // console.log(JSON.parse(localStorage.getItem("user")).jwtToken)
+      // fetch(`https://d91f-157-38-245-63.ngrok-free.app/products/${e.target.parentElement.parentElement.firstElementChild.innerText}`, {
+      //   method: "PATCH",
+      //   headers: {
+      //     "content-type": "application/json",
+      //   }
+      // }).then(res => {
+      //   if (res.status == 200) {
+      //     e.target.parentElement.parentElement.remove()
+      //     alert("Data deleted");
+      //   }
+      // })
+      //   .catch(e => {
+      //     console.log(e)
+      //   })
+      window.location.href =`${window.origin+"/Project/EditProduct.html"}`;
+    }
+    else if(!Authorization)
+    {
+      alert("You dont have permission please login")
+    }
+  })
+
+  table.addEventListener("click", (e) => {
+    let Authorization = JSON.parse(localStorage.getItem("user")).jwtToken
+    if (e.target.classList.contains("btn-delete") && Authorization) {
+      // console.log(JSON.parse(localStorage.getItem("user")).jwtToken)
+      fetch(`https://d91f-157-38-245-63.ngrok-free.app/products/${e.target.parentElement.parentElement.firstElementChild.innerText}`, {
+        method: "delete",
+        headers: {
+          "content-type": "application/json",
+          "Authorization": `Bearer ${Authorization}`
+        }
+      }).then(res => {
+        if (res.status == 200) {
+          e.target.parentElement.parentElement.remove()
+          alert("Data deleted");
+        }
+      })
+        .catch(e => {
+          console.log(e)
+        })
+    }
+    else if (!Authorization) {
+      alert("You do not have permission")
+    }
+  })
+
+</script>
+
+</html>
